@@ -1,4 +1,4 @@
-# SpinX - Casino Gaming Platform Frontend
+# Crypto Casino Gaming Platform Frontend
 
 Welcome to SpinX, a modern cryptocurrency casino gaming platform built with Next.js. This platform offers multiple provably fair games including Coinflip, Crash, Mines, and Roulette.  
   
