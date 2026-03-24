@@ -1,6 +1,6 @@
 
 'use client'
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Navbar,
     NavbarBrand,
@@ -13,8 +13,7 @@ import {
     Button,
 } from "@heroui/react";
 import { MenuList } from "@/components/Sidebar/menulist";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { getStoredGcashAccount } from "@/util/gcash";
 
 export const AcmeLogo = () => {
     return (
@@ -32,19 +31,23 @@ export const AcmeLogo = () => {
 const CustomNavbar = () => {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-
-    const { publicKey, disconnect, connect, signMessage, wallet } = useWallet();
-    const { setVisible } = useWalletModal();
-
-    function truncateMiddle(str: string): string {
-        if (str.length <= 8) return str;
-        return `${str.slice(0, 4)}...${str.slice(-4)}`;
-    }
+    const [registeredNumber, setRegisteredNumber] = useState<string | null>(null);
 
     useEffect(() => {
-        console.log(publicKey)
-    }, [publicKey])
+        const account = getStoredGcashAccount();
+        if (!account) {
+            setRegisteredNumber(null);
+            return;
+        }
+
+        const cleaned = account.gcashNumber.replace(/\D/g, "");
+        if (cleaned.length < 4) {
+            setRegisteredNumber(account.gcashNumber);
+            return;
+        }
+
+        setRegisteredNumber(`••••${cleaned.slice(-4)}`);
+    }, []);
 
     return (
         <Navbar isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} classNames={
@@ -87,8 +90,8 @@ const CustomNavbar = () => {
 
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Button as={Link} color={publicKey ? "success" : "danger"} variant="flat" className={`border ${publicKey ? "border-success-500" : "border-red-500"} text-white`} onPress={() => !publicKey ? setVisible(true) : disconnect()}>
-                        {publicKey ? truncateMiddle(publicKey.toString()) : "Connect"}
+                    <Button as={Link} href="/cashier" color={registeredNumber ? "success" : "warning"} variant="flat" className="border text-white">
+                        {registeredNumber ? `GCash ${registeredNumber}` : "Set GCash"}
                     </Button>
                 </NavbarItem>
             </NavbarContent>

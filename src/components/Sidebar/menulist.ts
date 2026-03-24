@@ -19,4 +19,9 @@ export const MenuList = [
         path:"slide",
         title:"Slide"
     },
+    {
+        icon:"",
+        path:"cashier",
+        title:"GCash Cashier"
+    },
 ]
