@@ -62,14 +62,14 @@ const CustomNavbar = () => {
             <NavbarContent className="sm:hidden pr-3" justify="center">
                 <NavbarBrand>
                     <AcmeLogo />
-                    <p className="font-bold text-inherit">BETOKPH</p>
+                    <p className="font-bold text-inherit">FasaGame</p>
                 </NavbarBrand>
             </NavbarContent>
 
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 <NavbarBrand>
                     <AcmeLogo />
-                    <p className="font-bold text-inherit">BETOKPH</p>
+                    <p className="font-bold text-inherit">FasaGame</p>
                 </NavbarBrand>
                 {/* <NavbarItem>
                     <Link color="foreground" href="#">
@@ -104,7 +104,7 @@ const CustomNavbar = () => {
                             color={
                                 "foreground"
                             }
-                            href={`/${item.path}`}
+                            href={item.path}
                             size="lg"
                         >
                             {item.title}

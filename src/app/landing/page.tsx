@@ -10,34 +10,31 @@ export default function page() {
             desc:"Find Gem"
         },
         {
-            name:"Slide",
+            name:"Jackport",
             link:"/slide",
             background:"jackport",
-            desc:"Hit your target"
+            desc:"Anyhow, it stops"
         },
         {
-            name:"Video Poker",
+            name:"Poker",
             link:"/videopoker",
             background:"poker",
-            desc:"Deal and draw"
+            desc:"Poker king"
         },
         {
             name:"Crash",
             link:"/crash",
             background:"crash",
-            desc:"Cash out on time"
+            desc:"Never stop!"
         },
     ]
     return (
         <div className='bg-casino w-screen min-h-screen bg-center bg-cover bg-no-repeat'>
-            <div className='w-full md:w-4/5 lg:w-2/3 xl:w-1/2 bg-black/60 backdrop-blur-sm min-h-screen relative flex items-center justify-center px-4'>
-                <div className='w-full'>
-                    <h1 className='text-center text-white text-4xl mb-6'>BETOKPH Games</h1>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <div className='w-full md:w-4/5 lg:w-2/3 xl:w-1/2 bg-black/60 backdrop-blur-sm min-h-screen relative flex items-center justify-center'>
+                <div className='grid grid-cols-2 gap-4'>
                     {rooms.map((room, idx)=>(
                         <Card {...room} key={idx} />
                     ))}
-                    </div>
                 </div>
                 <div className='hidden bg-jackport bg-mine bg-poker bg-crash'></div>
             </div>

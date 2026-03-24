@@ -112,17 +112,6 @@ const setStoredBalance = (amount: number): number => {
   return next;
 };
 
-export const adjustStoredBalance = (delta: number): number => {
-  const current = getStoredBalance();
-  const next = Number((current + delta).toFixed(2));
-
-  if (next < 0) {
-    throw new Error("Insufficient balance.");
-  }
-
-  return setStoredBalance(next);
-};
-
 const createTransaction = (
   type: TransactionType,
   channel: TransactionChannel,
