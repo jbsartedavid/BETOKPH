@@ -1,6 +1,5 @@
 'use client';
-import React, { useState } from "react";
-import Layout from "@/layout/layout";
+import React from "react";
 import { Button, Image } from "@heroui/react";
 import Link from "next/link";
 import { Dancing_Script } from "next/font/google";
@@ -25,9 +24,9 @@ const GameBoard = () => {
                     <div className="relative w-screen h-screen">
                         <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center flex-col">
                             <p className={`${dancing.className} text-white text-4xl -rotate-12 -translate-x-40 translate-y-12`}>Online Casino</p>
-                            <h1 className="text-[200px] text-white masked-text px-12">Mu<span className="text-8xl font-extralight">x</span>sin</h1>
+                          <h1 className="text-[140px] md:text-[200px] text-white masked-text px-12">BETOKPH</h1>
                             <p className="text-white text-2xl">
-                                Betting means you are not alione!
+                            GCash-powered casino games.
                             </p>
                             <Link href={"/landing"}>
                                 <Button className="synthwave-laser-button mt-8">Launch App</Button>

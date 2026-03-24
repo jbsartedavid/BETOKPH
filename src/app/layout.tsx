@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bangers, Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/provider";
 import LoadingIndicator from "@/components/Loading";
@@ -11,11 +11,6 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const bangers = Bangers({
-  weight: "400",
   subsets: ["latin"],
 });
 
@@ -33,7 +28,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${bangers.className} max-w-[1920px] bg-white mx-auto`}>
+      <body suppressHydrationWarning className={`${geistSans.className} max-w-[1920px] bg-white mx-auto`}>
         <LoadingIndicator />
         <Providers>
           {children}
