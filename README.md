@@ -1,176 +1,116 @@
-# BETOKPH Casino (GCash-First)
+# Casino Game Website with crypto payment
 
-BETOKPH is a casino game frontend built with Next.js and HeroUI, now refocused for **casino-only gameplay** with a **GCash-first cashier flow**.
+Casino Game website is an all-in-one online casino software with customizable games, innovative features, and SEO-optimized design, perfect for launching your own casino.
 
-This version removes Web3/Solana wallet integration and introduces local, integration-ready flows for:
-- GCash account registration per client
-- Deposits via GCash API flow or QR flow
-- Disbursement (withdrawal) via GCash
-- Cashier transaction history and local balance ledger
 
----
+## Contact for support or suggestions
 
-## What Changed
+**Telegram:** [@crypmancer](https://t.me/crypmancer)
 
-### 1) Removed Web3 / NFT-related stack
-- Removed Solana provider wiring from the global app provider
-- Removed Solana wallet connect logic from navbar
-- Removed Solana wallet adapter dependencies from `package.json`
 
-### 2) Added GCash cashier module
-- New utility module: `src/util/gcash.ts`
-- New route: `src/app/cashier/page.tsx`
-- New sidebar entry: **GCash Cashier**
+## Reference images
 
-### 3) Cashier capabilities
-- Register or update client GCash details (`fullName`, `gcashNumber`)
-- Deposit funds:
-  - **GCash API** mode (simulated immediate success)
-  - **GCash QR** mode (creates QR payload + QR image URL, then manual confirm)
-- Request disbursement (withdrawal) to registered GCash number
-- View transaction history with status (`pending`, `completed`, `failed`)
+UI reference screenshots for the main game views:
+
+| Game / View | Screenshot |
+|-------------|------------|
+| **Dashboard** | ![Dashboard](refference%20images/dashboard.png) |
+| **Crash** | ![Crash](refference%20images/crash.png) |
+| **X100** | ![X100](refference%20images/x100.png) |
+| **Dice** | ![Dice](refference%20images/dice.png) |
+| **Keno** | ![Keno](refference%20images/keno.png) |
+| **Mines** | ![Mines](refference%20images/mines.png) |
 
 ---
 
-## Current Transaction Behavior
+## Project guide
 
-The cashier is implemented as an **integration-ready local simulation** so the app works end-to-end without backend credentials.
+### Overview
 
-- Data is persisted in browser `localStorage`
-- Balance updates automatically on completed deposits/disbursements
-- QR deposits are created as `pending` and become `completed` when user confirms
+- **Stack:** Next.js 14, React 18, Prisma, NextAuth, Socket.io client.
+- **Backend:** This app serves the frontend and REST API; the separate Node game server (`../server`) handles real-time game logic and calls these APIs.
 
-Storage keys:
-- `betokph.gcash.account`
-- `betokph.gcash.history`
-- `betokph.player.balance`
+### Requirements
 
-> For production, replace local logic in `src/util/gcash.ts` with calls to your secure backend that integrates with official GCash payment/disbursement APIs.
-
----
-
-## Pages and Modules
-
-- `src/app/cashier/page.tsx`
-  - Account registration
-  - Deposit (API / QR)
-  - QR confirmation
-  - Disbursement
-  - Transaction history
-
-- `src/util/gcash.ts`
-  - Account validation and normalization
-  - Transaction creation and status updates
-  - Ledger state management
-
-- `src/layout/navbar.tsx`
-  - Replaced wallet connect button with GCash status/action button
-
-- `src/providers/provider.tsx`
-  - Removed Solana provider wrapper
-
----
-
-## GCash Number Validation
-
-Accepted formats:
-- `09XXXXXXXXX`
-- `639XXXXXXXXX`
-
-Numbers are normalized and stored in local format (`09XXXXXXXXX`).
-
----
-
-## Getting Started
-
-### Prerequisites
 - Node.js 18+
-- npm 9+
+- MySQL (same DB as Laravel, or a new one with Prisma migrations)
+- Redis (optional, for balance history and chat)
 
-### Install dependencies
+### 1. Setup
+
 ```bash
+cd next-app
+cp .env.example .env
+# Edit .env: DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL, and optionally game server / Redis URLs
 npm install
+npx prisma generate
 ```
 
-### Run development server
+### 2. Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | MySQL connection string (e.g. `mysql://user:password@localhost:3306/goldenx_casino`) |
+| `NEXTAUTH_URL` | App URL (e.g. `http://localhost:3000`) |
+| `NEXTAUTH_SECRET` | Secret for NextAuth (e.g. `openssl rand -base64 32`) |
+| `NEXT_PUBLIC_SOCKET_URL` | Game server WebSocket URL |
+| `GAME_SERVER_BASE_URL` | Game server HTTP base URL |
+| `REDIS_URL` | Optional Redis URL |
+
+### 3. Database
+
+Uses the same MySQL as Laravel. Tables must match the Prisma schema. If tables do not exist yet:
+
 ```bash
+npx prisma db push
+```
+
+To create a user: use site registration or manually hash the password (bcrypt) and insert into `users`.
+
+### 4. Running the app
+
+```bash
+# Development
 npm run dev
-```
+# Open http://localhost:3000
 
-Open:
-- `http://localhost:3000` for landing/game pages
-- `http://localhost:3000/cashier` for GCash cashier
-
-### Build for production
-```bash
+# Production
 npm run build
-npm run start
+npm start
 ```
 
----
+### 5. Game server (Node)
 
-## Production Integration Plan (Recommended)
+From the project root, run the existing server:
 
-To use real GCash rails in production:
+```bash
+cd ../server
+node app.js
+```
 
-1. **Create backend payment service**
-   - Store API keys and secrets server-side only
-   - Expose secure endpoints for deposit initialization, QR generation, status check, and disbursement
+In `server/app.js`, set `domain` (or `API_BASE_URL`) to the Next.js base URL, e.g.:
 
-2. **Replace local utility calls**
-   - Replace `createDeposit`, `confirmQrDeposit`, and `createDisbursement` internals in `src/util/gcash.ts`
-   - Keep current interfaces so UI does not need large rewrites
+```js
+domain = 'http://localhost:3000';  // or https://yourdomain.com
+```
 
-3. **Add webhooks**
-   - Verify payment/disbursement callbacks
-   - Update transaction status and game balance server-side
+Then requests like `domain + '/generate_number_x30'`, `domain + '/winwheel'`, `domain + '/wincrash'`, etc. will go to the Next.js API.
 
-4. **Move balance/account/history to database**
-   - `users` table with gcash profile
-   - `wallet_ledger` table for auditable balance movements
-   - `transactions` table for API/QR/disbursement lifecycle tracking
+### 6. API (Next.js routes)
 
-5. **Compliance and operational controls**
-   - KYC/AML checks where required
-   - Withdrawal limits and fraud rules
-   - Full audit logs and dispute handling process
+| Method + Path | Purpose |
+|---------------|---------|
+| `POST /api/auth/register` | Registration |
+| `POST /api/auth/[...nextauth]` | NextAuth (login/logout) |
+| `POST /api/balance/get` | Current balance |
+| `POST /api/change/balance` | Switch balance type (real/demo) |
+| `POST /api/wheel/get`, `POST /api/wheel/bet` | Wheel |
+| `POST /api/crash/get`, `POST /api/crash/bet` | Crash |
+| `POST /api/chat/get`, `POST /api/chat/send` | Chat |
+| `GET /api/generate_number_x30`, `GET /api/winwheel` | Game server (wheel) |
+| `GET /api/generate_number_x100`, `GET /api/winx100` | X100 |
+| `GET /api/wincrash` | Crash round end |
 
----
-
-## Suggested Backend API Contract
-
-The frontend can target these routes:
-
-- `POST /api/gcash/account/register`
-- `GET /api/gcash/account`
-- `POST /api/gcash/deposit` (channel: `api` | `qr`)
-- `POST /api/gcash/deposit/confirm`
-- `POST /api/gcash/disburse`
-- `GET /api/gcash/transactions`
-- `GET /api/wallet/balance`
-
-Payload examples are intentionally omitted in this README so your final contract can match your selected provider/gateway.
+Other games (Keno, Jackpot, Mines, Coin, Shoot, etc.) follow the same pattern; see `CONVERSION-TO-NEXTJS.md` in the project root for the full list.
 
 ---
-
-## Tech Stack
-
-- Next.js (App Router)
-- React + TypeScript
-- HeroUI
-- Tailwind CSS
-- Socket.io client (game realtime)
-
----
-
-## Notes
-
-- This repository is now positioned as **casino-focused**, not NFT/Web3 wallet-focused.
-- Existing game pages (Crash, Mine, Slide, Video Poker) remain available.
-- Cashier currently uses local simulation and is ready to be connected to your backend GCash integration.
-
----
-
-## License / Ownership
-
-Set your preferred license and ownership details for BETOKPH before production release.
